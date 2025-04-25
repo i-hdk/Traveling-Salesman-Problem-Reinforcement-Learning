@@ -60,7 +60,7 @@ class TSPEnv(gym.Env):
             self.current_city = action
             self.visited[action] = 1
             self.steps += 1
-            terminated = np.all(self.visited)
+            terminated = bool(np.all(self.visited))
 
 
 

@@ -6,6 +6,7 @@ import numpy as np
 from stable_baselines3.common.callbacks import BaseCallback
 import matplotlib.pyplot as plt
 
+#runs while training to keep track of training over time
 class RewardTrackerCallback(BaseCallback):
     def __init__(self, verbose=0):
         super().__init__(verbose)
@@ -32,6 +33,8 @@ class RewardTrackerCallback(BaseCallback):
         plt.grid(True)
         plt.show()
 
+#TODO add greedy policy
+
 def evaluate_random_policy(env, episodes=3):
     for ep in range(episodes):
         obs, info = env.reset()
@@ -40,7 +43,7 @@ def evaluate_random_policy(env, episodes=3):
 
         print(f"\n[Random Policy] Episode {ep + 1}")
         while not done:
-            action = env.action_space.sample()
+            action = env.action_space.sample() #FIXME can only sample non visited cities
             obs, reward, terminated, truncated, info = env.step(action)
             env.render()
             done = terminated or truncated
@@ -53,7 +56,7 @@ def evaluate_trained_agent(env, model, episodes=3):
 
         print(f"\n[Trained Agent] Episode {ep + 1}")
         while not done:
-            action, _ = model.predict(obs, deterministic=True)
+            action, _ = model.predict(obs, deterministic=True) #deterministic=true: always pick best option
             obs, reward, terminated, truncated, info = env.step(action)
             env.render()
             done = terminated or truncated
@@ -62,14 +65,17 @@ def evaluate_trained_agent(env, model, episodes=3):
 
 env = TSPEnv.TSPEnv(num_cities=5)
 check_env(env)
-model = PPO("MultiInputPolicy", env, verbose=1)
+model = PPO("MultiInputPolicy", env, verbose=1) #TODO try different policies or models
 callback = RewardTrackerCallback()
 model.learn(total_timesteps=10000 * 4, callback=callback) #first num is episodes
 callback.plot_rewards()
 
+#TODO add save/load model with a separate file to separate training & testing 
 
 evaluate_random_policy(env)
 evaluate_trained_agent(env, model)
+
+#TODO add bar graphs with random / greedy / different trained models on avg total dist travelled
 
 env.close()
 

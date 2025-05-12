@@ -69,6 +69,7 @@ class TSPEnv(gym.Env):
         info = {"total_distance": self.total_distance}
         return obs, reward, terminated, truncated, info
 
+    #TODO change render to clear animation
     def render(self):
         print(f"Step: {self.steps}")
         print(f"Visited: {self.visited}")

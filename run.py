@@ -71,3 +71,5 @@ callback.plot_rewards()
 evaluate_random_policy(env)
 evaluate_trained_agent(env, model)
 
+env.close()
+

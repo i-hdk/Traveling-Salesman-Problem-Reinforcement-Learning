@@ -68,6 +68,10 @@ class TSPEnv(gym.Env):
         obs = {"visited": self.visited.copy(), "current_city": self.current_city}
         info = {"total_distance": self.total_distance}
         return obs, reward, terminated, truncated, info
+    
+    #should return 1d numpy array
+    def get_visited(self):
+        return self.visited.copy()
 
     #TODO change render to clear animation
     def render(self):

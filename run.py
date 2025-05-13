@@ -5,6 +5,7 @@ from stable_baselines3.common.env_checker import check_env
 import numpy as np
 from stable_baselines3.common.callbacks import BaseCallback
 import matplotlib.pyplot as plt
+import random
 
 #runs while training to keep track of training over time
 class RewardTrackerCallback(BaseCallback):
@@ -43,7 +44,21 @@ def evaluate_random_policy(env, episodes=3):
 
         print(f"\n[Random Policy] Episode {ep + 1}")
         while not done:
-            action = env.action_space.sample() #FIXME can only sample non visited cities
+            #action = env.action_space.sample() #FIXME can only sample non visited cities
+            action = 0
+            visited = env.get_visited()
+            to_visit = visited.size-visited.sum()
+            chosen = random.randint(1,to_visit)
+            x = 0
+            j = 0
+            for i in visited:
+                if i == 0:
+                    x+=1
+                if x == chosen:
+                    action = j
+                    break
+                j+=1
+                
             obs, reward, terminated, truncated, info = env.step(action)
             env.render()
             done = terminated or truncated

@@ -7,45 +7,19 @@ from stable_baselines3.common.callbacks import BaseCallback
 import matplotlib.pyplot as plt
 import random
 
-#runs while training to keep track of training over time
-class RewardTrackerCallback(BaseCallback):
-    def __init__(self, verbose=0):
-        super().__init__(verbose)
-        self.episode_rewards = []
-        self.current_rewards = 0
-
-    def _on_step(self) -> bool:
-        # Accumulate reward
-        self.current_rewards += self.locals["rewards"][0]
-
-        # Check if episode is done
-        if self.locals["dones"][0]:
-            self.episode_rewards.append(self.current_rewards)
-            self.current_rewards = 0
-        return True
-
-    def plot_rewards(self):
-        plt.figure(figsize=(10, 4))
-        plt.plot(self.episode_rewards, label="Episode Reward")
-        plt.xlabel("Episode")
-        plt.ylabel("Total Reward")
-        plt.title("Training Reward Over Time")
-        plt.legend()
-        plt.grid(True)
-        plt.show(block=False)
-
 #TODO add greedy policy
+#def evaluate_greedy_policy
 
 def evaluate_random_policy(env, episodes=3):
     random_avg_total_dist = 0
     for ep in range(episodes):
-        obs, info = env.reset()
+        obs, info = env.reset(seed=ep)
         done = False
         total_distance = 0
 
         print(f"\n[Random Policy] Episode {ep + 1}")
         while not done:
-            #action = env.action_space.sample() #FIXME can only sample non visited cities
+            #action = env.action_space.sample()
             action = 0
             visited = env.get_visited()
             to_visit = visited.size-visited.sum()
@@ -71,7 +45,7 @@ def evaluate_random_policy(env, episodes=3):
 def evaluate_trained_agent(env, model, episodes=3):
     trained_avg_total_dist = 0
     for ep in range(episodes):
-        obs, info = env.reset()
+        obs, info = env.reset(seed=ep)
         done = False
 
         print(f"\n[Trained Agent] Episode {ep + 1}")
@@ -87,11 +61,8 @@ def evaluate_trained_agent(env, model, episodes=3):
 
 print("running")
 env = TSPEnv.TSPEnv(num_cities=5)
-check_env(env)
-model = PPO("MultiInputPolicy", env, verbose=1) #TODO try different policies or models
-callback = RewardTrackerCallback()
-model.learn(total_timesteps=10000 * 4, callback=callback) #first num is episodes
-callback.plot_rewards()
+#check_env(env)
+model = PPO.load("PPO_model")
 
 #TODO add save/load model with a separate file to separate training & testing 
 

@@ -58,7 +58,7 @@ class TSPEnv(gym.Env):
         else:
             distance = np.linalg.norm(self.cities[self.current_city] - self.cities[action])
             self.total_distance += distance
-            reward = -distance
+            reward = -self.total_distance
             self.current_city = action
             self.visited[action] = 1
             self.steps += 1
@@ -76,6 +76,7 @@ class TSPEnv(gym.Env):
     #TODO change render to clear animation
     def render(self):
         print(f"Step: {self.steps}")
+        print(f"City coordinates: {self.cities}") 
         print(f"Visited: {self.visited}")
         print(f"Current City: {self.current_city}")
         print(f"Total Distance: {self.total_distance:.2f}")

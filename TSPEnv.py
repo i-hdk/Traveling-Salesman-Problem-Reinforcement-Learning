@@ -19,7 +19,8 @@ class TSPEnv(gym.Env):
 
         self.observation_space = spaces.Dict({
             "visited": spaces.MultiBinary(num_cities),
-            "current_city": spaces.Discrete(num_cities)
+            "current_city": spaces.Discrete(num_cities),
+            "city_coords": spaces.Box(low=0.0, high=1.0, shape=(self.num_cities, 2), dtype=np.float32)
         })
 
         # self.seed()
@@ -47,25 +48,34 @@ class TSPEnv(gym.Env):
         self.total_distance = 0.0
         self.steps = 0
 
-        obs = {"visited": self.visited.copy(), "current_city": self.current_city}
+        obs = {"visited": self.visited.copy(), 
+               "current_city": self.current_city,
+               "city_coords": self.cities.copy().astype(np.float32)
+               }
         info = {}
         return obs, info
 
     def step(self, action):
         if self.visited[action]:
-            reward = -10.0 #penalize if visiting already visited city
+            reward = -100.0 #penalize if visiting already visited city
             terminated = False
         else:
             distance = np.linalg.norm(self.cities[self.current_city] - self.cities[action])
             self.total_distance += distance
-            reward = -self.total_distance
+            reward = -distance
             self.current_city = action
             self.visited[action] = 1
             self.steps += 1
             terminated = bool(np.all(self.visited))
 
+        if terminated: 
+            reward = -self.total_distance #sparce reward
+
         truncated = False
-        obs = {"visited": self.visited.copy(), "current_city": self.current_city}
+        obs = {"visited": self.visited.copy(), 
+               "current_city": self.current_city,
+               "city_coords": self.cities.copy().astype(np.float32)
+               }
         info = {"total_distance": self.total_distance}
         return obs, reward, terminated, truncated, info
     

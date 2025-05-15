@@ -33,10 +33,12 @@ class RewardTrackerCallback(BaseCallback):
         plt.show(block=False)
 
 print("training model...")
-env = TSPEnv.TSPEnv(num_cities=5)
+env = TSPEnv.TSPEnv(num_cities=15)
 check_env(env)
 model = PPO("MultiInputPolicy", env, verbose=1) #TODO try different policies or models
 callback = RewardTrackerCallback()
 model.learn(total_timesteps=10000 * 4, callback=callback) #first num is episodes
 callback.plot_rewards()
 model.save("PPO_model")
+
+input("Press Enter to exit...")

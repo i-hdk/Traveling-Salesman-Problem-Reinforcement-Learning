@@ -10,10 +10,12 @@ import random
 #TODO add greedy policy
 #def evaluate_greedy_policy
 
+SEED = 20
+
 def evaluate_random_policy(env, episodes=3):
     random_avg_total_dist = 0
     for ep in range(episodes):
-        obs, info = env.reset(seed=ep)
+        obs, info = env.reset(seed=SEED+ep)
         done = False
         total_distance = 0
 
@@ -45,7 +47,7 @@ def evaluate_random_policy(env, episodes=3):
 def evaluate_trained_agent(env, model, episodes=3):
     trained_avg_total_dist = 0
     for ep in range(episodes):
-        obs, info = env.reset(seed=ep)
+        obs, info = env.reset(seed=SEED+ep)
         done = False
 
         print(f"\n[Trained Agent] Episode {ep + 1}")
@@ -60,14 +62,14 @@ def evaluate_trained_agent(env, model, episodes=3):
     return trained_avg_total_dist
 
 print("running")
-env = TSPEnv.TSPEnv(num_cities=5)
+env = TSPEnv.TSPEnv(num_cities=15)
 #check_env(env)
 model = PPO.load("PPO_model")
 
 #TODO add save/load model with a separate file to separate training & testing 
 
-random_avg_total_dist = evaluate_random_policy(env,episodes=10)
-trained_avg_total_dist = evaluate_trained_agent(env, model,episodes=10)
+random_avg_total_dist = evaluate_random_policy(env,episodes=1000)
+trained_avg_total_dist = evaluate_trained_agent(env, model,episodes=1000)
 
 #TODO add bar graphs with random / greedy / different trained models on avg total dist travelled
 print(f"random policy average total distance: {random_avg_total_dist:.3f}")
